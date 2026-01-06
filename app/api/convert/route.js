@@ -145,6 +145,13 @@ export async function POST(request) {
 			);
 		}
 
+		if (sourceExt === target) {
+			return NextResponse.json(
+				{ error: `File sudah dalam format ${target.toUpperCase()}.` },
+				{ status: 400 }
+			);
+		}
+
 		const buffer = Buffer.from(await file.arrayBuffer());
 		const text = await extractText(buffer, sourceExt);
 		const sourceName = file.name.split(".").shift();
