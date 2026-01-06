@@ -1,0 +1,17 @@
+Test Document untuk Konversi
+
+Ini adalah dokumen test sederhana untuk menguji konversi antar format.
+
+Fitur yang ditest:
+1. Konversi DOCX ke PDF
+2. Konversi PDF ke DOCX
+3. Konversi TXT ke semua format
+
+Format teks:
+- Bold text (jika didukung)
+- Italic text (jika didukung)
+- Bullet points seperti ini
+
+Paragraf baru dengan spacing normal.
+
+Terima kasih telah menggunakan DocVerter!

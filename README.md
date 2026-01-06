@@ -1,31 +1,48 @@
 # DocVerter - Document Converter
 
-Aplikasi web untuk mengonversi dokumen antar format (DOCX, PDF, TXT) dengan mempertahankan format, tabel, dan struktur dokumen asli.
+Aplikasi web untuk mengonversi dokumen antar format (DOCX, PDF, TXT) menggunakan LibreOffice untuk hasil konversi yang akurat dan berkualitas tinggi.
 
 ## Fitur Utama
 
-- **Konversi Multi-Format**: DOCX ↔ PDF ↔ TXT
-- **Pertahankan Format**: Tabel, heading, dan struktur dokumen dipertahankan
+- **Konversi Multi-Format**: DOCX ↔ PDF ↔ TXT (semua arah)
+- **Powered by LibreOffice**: Menggunakan LibreOffice untuk konversi berkualitas profesional
+- **Pertahankan Format**: Format, tabel, gambar, dan struktur dokumen dipertahankan
 - **Modern UI**: Interface dengan Tailwind CSS dan glass morphism design
-- **Instant Download**: Hasil langsung bisa diunduh tanpa antrian
+- **Instant Download**: Hasil langsung bisa diunduh
 
 ## Teknologi
 
 - **Frontend**: Next.js 16, React 19, Tailwind CSS 4
-- **Conversion**: 
-  - mammoth (DOCX → HTML)
-  - puppeteer (HTML → PDF) - Local development only
-  - docx library (HTML → DOCX)
-  - pdf-parse (PDF parsing)
+- **Conversion Engine**: LibreOffice (via libreoffice-convert)
+- **Runtime**: Node.js (local development only)
 
 ## Instalasi
+
+### 1. Install LibreOffice
+
+**Windows:**
+```bash
+winget install -e --id TheDocumentFoundation.LibreOffice
+```
+
+**macOS:**
+```bash
+brew install --cask libreoffice
+```
+
+**Linux:**
+```bash
+sudo apt-get install libreoffice
+```
+
+### 2. Install Dependencies & Run
 
 ```bash
 npm install
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) with your browser.
 
 ## Cara Penggunaan
 
@@ -34,19 +51,25 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 3. Klik "Konversi sekarang"
 4. Download hasil konversi
 
-## Keterbatasan
+## Supported Conversions
 
-### Local Development
-- Semua format konversi tersedia termasuk PDF generation
+| From | To | Status |
+|------|-----|--------|
+| DOCX | PDF | ✅ |
+| DOCX | TXT | ✅ |
+| PDF | DOCX | ✅ |
+| PDF | TXT | ✅ |
+| TXT | DOCX | ✅ |
+| TXT | PDF | ✅ |
 
-### Vercel Free Tier
-- ✅ DOCX → DOCX/TXT
-- ✅ PDF → DOCX/TXT (text extraction only)
-- ✅ TXT → DOCX
-- ❌ PDF generation (HTML → PDF) - memerlukan Puppeteer/Browser yang tidak tersedia di serverless free tier
-- **Solusi**: Upgrade ke Vercel Pro, atau gunakan DOCX format sebagai alternatif
+## Catatan Deployment
 
-**Alasan**: PDF generation memerlukan Chromium browser yang tidak bisa berjalan di Vercel Free tier (memory & timeout limit).
+⚠️ **Aplikasi ini untuk LOCAL DEVELOPMENT ONLY**
+
+LibreOffice memerlukan binary executable yang tidak tersedia di serverless platforms seperti Vercel. Untuk production deployment, gunakan:
+- VPS/Dedicated server dengan LibreOffice terinstall
+- Docker container dengan LibreOffice
+- Alternatif: Cloud document conversion services (Google Docs API, CloudConvert, dll)
 
 ## Development
 
