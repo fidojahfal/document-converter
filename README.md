@@ -14,7 +14,7 @@ Aplikasi web untuk mengonversi dokumen antar format (DOCX, PDF, TXT) dengan memp
 - **Frontend**: Next.js 16, React 19, Tailwind CSS 4
 - **Conversion**: 
   - mammoth (DOCX → HTML)
-  - html-pdf-node + puppeteer (HTML → PDF)
+  - puppeteer (HTML → PDF) - Local development only
   - docx library (HTML → DOCX)
   - pdf-parse (PDF parsing)
 
@@ -34,11 +34,19 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 3. Klik "Konversi sekarang"
 4. Download hasil konversi
 
-## Catatan
+## Keterbatasan
 
-- Konversi mempertahankan tabel dan formatting
-- Gambar kompleks mungkin tidak tersimpan sempurna
-- File terenkripsi tidak didukung
+### Local Development
+- Semua format konversi tersedia termasuk PDF generation
+
+### Vercel Free Tier
+- ✅ DOCX → DOCX/TXT
+- ✅ PDF → DOCX/TXT (text extraction only)
+- ✅ TXT → DOCX
+- ❌ PDF generation (HTML → PDF) - memerlukan Puppeteer/Browser yang tidak tersedia di serverless free tier
+- **Solusi**: Upgrade ke Vercel Pro, atau gunakan DOCX format sebagai alternatif
+
+**Alasan**: PDF generation memerlukan Chromium browser yang tidak bisa berjalan di Vercel Free tier (memory & timeout limit).
 
 ## Development
 
