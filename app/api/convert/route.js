@@ -100,8 +100,8 @@ async function textToPdfBuffer(text) {
 	return Buffer.from(pdfBytes);
 }
 
-function toDownloadResponse(buffer, target) {
-	const filename = `converted.${target}`;
+function toDownloadResponse(buffer, target, sourceName) {
+	const filename = `${sourceName}_converted.${target}`;
 	return new Response(buffer, {
 		headers: {
 			"Content-Type": contentTypes[target] || "application/octet-stream",
@@ -147,19 +147,20 @@ export async function POST(request) {
 
 		const buffer = Buffer.from(await file.arrayBuffer());
 		const text = await extractText(buffer, sourceExt);
+		const sourceName = file.name.split(".").shift();
 
 		if (target === "txt") {
-			return toDownloadResponse(Buffer.from(text, "utf8"), "txt");
+			return toDownloadResponse(Buffer.from(text, "utf8"), "txt", sourceName);
 		}
 
 		if (target === "docx") {
 			const docxBuffer = await textToDocxBuffer(text);
-			return toDownloadResponse(docxBuffer, "docx");
+			return toDownloadResponse(docxBuffer, "docx", sourceName);
 		}
 
 		if (target === "pdf") {
 			const pdfBuffer = await textToPdfBuffer(text);
-			return toDownloadResponse(pdfBuffer, "pdf");
+			return toDownloadResponse(pdfBuffer, "pdf", sourceName);
 		}
 
 		return NextResponse.json(

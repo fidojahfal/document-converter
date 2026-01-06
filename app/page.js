@@ -80,7 +80,7 @@ export default function Home() {
       const blob = await response.blob();
       const url = URL.createObjectURL(blob);
       setDownloadUrl(url);
-      setDownloadName(`converted.${target}`);
+      setDownloadName(`${file.name.split(".").shift()}_converted.${target}`);
       setMessage("Berhasil! Dokumen siap diunduh.");
     } catch (error) {
       setMessage(error.message || "Terjadi kesalahan tak terduga.");
