@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import mammoth from "mammoth";
 import pdfParse from "pdf-parse";
-import chromium from "@sparticuz/chromium";
+import PDFDocument from "pdfkit";
 
 const isDev = process.env.NODE_ENV === "development";
 import {
@@ -168,6 +168,16 @@ async function pdfToHtml(buffer) {
 }
 
 async function htmlToPdf(html) {
+  try {
+    const puppeteer = await import("puppeteer");
+    return await htmlToPdfWithPuppeteer(html, puppeteer.default);
+  } catch (error) {
+    console.warn("Puppeteer PDF generation failed, falling back to pdfkit", error.message);
+    return generatePdfWithPdfkit(html);
+  }
+}
+
+async function htmlToPdfWithPuppeteer(html, puppeteer) {
   const styledHtml = `
 <!DOCTYPE html>
 <html>
@@ -301,20 +311,10 @@ ${html}
 </html>
 	`;
 
-  let browser;
-  
-  if (isDev) {
-    const puppeteer = await import("puppeteer");
-    browser = await puppeteer.default.launch({ headless: true });
-  } else {
-    const puppeteerCore = await import("puppeteer-core");
-    browser = await puppeteerCore.default.launch({
-      args: chromium.args,
-      defaultViewport: chromium.defaultViewport,
-      executablePath: await chromium.executablePath(),
-      headless: chromium.headless,
-    });
-  }
+  const browser = await puppeteer.launch({ 
+    headless: true,
+    args: ["--no-sandbox", "--disable-setuid-sandbox"]
+  });
 
   try {
     const page = await browser.newPage();
@@ -334,6 +334,105 @@ ${html}
     return Buffer.from(pdfBuffer);
   } finally {
     await browser.close();
+  }
+}
+
+function generatePdfWithPdfkit(html) {
+  return new Promise((resolve, reject) => {
+    const doc = new PDFDocument({
+      size: "A4",
+      margin: 40,
+      bufferPages: true,
+    });
+
+    const chunks = [];
+    doc.on("data", (chunk) => chunks.push(chunk));
+    doc.on("end", () => resolve(Buffer.concat(chunks)));
+    doc.on("error", reject);
+
+    const dom = htmlparser2.parseDocument(html);
+    const elements = DomUtils.getChildren(dom);
+
+    doc.font("Calibri", 11);
+    doc.fontSize(11);
+
+    for (const el of elements) {
+      renderElementToPdf(doc, el);
+    }
+
+    doc.end();
+  });
+}
+
+function renderElementToPdf(doc, element) {
+  if (!element || !element.name) return;
+
+  const text = DomUtils.getText(element).trim();
+
+  switch (element.name) {
+    case "h1":
+      doc.fontSize(16).font("Calibri-Bold");
+      if (text) doc.text(text, { align: "center" });
+      doc.fontSize(11).font("Calibri");
+      doc.moveDown(0.2);
+      break;
+    case "h2":
+      doc.fontSize(11).font("Calibri-Bold");
+      if (text) doc.text(text.toUpperCase());
+      doc.fontSize(11).font("Calibri");
+      doc.moveDown(0.3);
+      break;
+    case "h3":
+      doc.fontSize(11).font("Calibri-Bold");
+      if (text) doc.text(text);
+      doc.fontSize(11).font("Calibri");
+      doc.moveDown(0.2);
+      break;
+    case "p":
+      if (text) {
+        doc.text(text, { align: "left" });
+        doc.moveDown(0.3);
+      }
+      break;
+    case "hr":
+      const pageWidth = doc.page.width;
+      const margins = doc.page.margins;
+      doc.moveTo(margins.left, doc.y).lineTo(pageWidth - margins.right, doc.y).stroke();
+      doc.moveDown(0.5);
+      break;
+    case "ul":
+    case "ol":
+      const children = DomUtils.getChildren(element);
+      children.forEach((li, idx) => {
+        if (li.name === "li") {
+          const liText = DomUtils.getText(li).trim();
+          const bullet = element.name === "ol" ? `${idx + 1}. ` : "• ";
+          if (liText) doc.text(bullet + liText, { indent: 20 });
+        }
+      });
+      doc.moveDown(0.3);
+      break;
+    case "strong":
+    case "b":
+      if (text) {
+        doc.font("Calibri-Bold");
+        doc.text(text);
+        doc.font("Calibri");
+      }
+      break;
+    case "em":
+    case "i":
+      if (text) {
+        doc.font("Calibri-Oblique");
+        doc.text(text);
+        doc.font("Calibri");
+      }
+      break;
+    default:
+      const children2 = DomUtils.getChildren(element);
+      for (const child of children2) {
+        renderElementToPdf(doc, child);
+      }
   }
 }
 
