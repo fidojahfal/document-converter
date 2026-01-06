@@ -38,7 +38,7 @@ export default function UploadSection({
 
         <div className="flex flex-col gap-3">
           <p className="text-xs uppercase tracking-[0.2em] text-slate-400">Format tujuan</p>
-          <div className="grid grid-cols-3 gap-2">
+          <div className="grid grid-cols-3 gap-2 lg:grid-cols-1">
             {targets.map((item) => (
               <button
                 key={item.id}
@@ -66,7 +66,7 @@ export default function UploadSection({
           </button>
 
           <p className="text-xs text-slate-300">
-            Catatan: Konversi berbasis teks. Dokumen yang memiliki gambar atau elemen kompleks akan diekspor sebagai teks.
+            Konversi mempertahankan tabel, formatting, dan struktur dokumen. Gambar dan elemen kompleks mungkin tidak tersimpan sempurna.
           </p>
         </div>
       </div>
