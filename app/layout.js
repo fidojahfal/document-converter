@@ -17,7 +17,7 @@ const display = Space_Grotesk({
 });
 
 export const metadata = {
-  title: "DocMorph | Konversi Dokumen",
+  title: "DocVerter | Document Converter",
   description: "Konversi DOCX, TXT, dan PDF secara instan dalam satu tempat.",
 };
 

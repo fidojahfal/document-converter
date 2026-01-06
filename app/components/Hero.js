@@ -3,9 +3,9 @@ export default function Hero() {
     <div className="glass rounded-3xl p-8 md:p-10">
       <div className="mb-4 flex items-center gap-3 text-xs uppercase tracking-[0.2em] text-slate-300">
         <span className="inline-flex h-8 items-center rounded-full bg-white/10 px-4 text-[11px] font-semibold text-cyan-200">
-          DocMorph 2026
+          DocVerter
         </span>
-        <span>Konversi teks lintas format</span>
+        <span>Document Converter lintas format</span>
       </div>
       <h1 className="text-4xl font-semibold leading-tight text-white sm:text-5xl">
         Ubah DOCX, PDF, atau TXT jadi format lain dalam hitungan detik.
