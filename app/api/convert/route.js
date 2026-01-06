@@ -1,7 +1,9 @@
 import { NextResponse } from "next/server";
 import mammoth from "mammoth";
 import pdfParse from "pdf-parse";
-import puppeteer from "puppeteer";
+import chromium from "@sparticuz/chromium";
+
+const isDev = process.env.NODE_ENV === "development";
 import {
   Document,
   Packer,
@@ -299,10 +301,20 @@ ${html}
 </html>
 	`;
 
-  const browser = await puppeteer.launch({
-    headless: true,
-    args: ["--no-sandbox", "--disable-setuid-sandbox"],
-  });
+  let browser;
+  
+  if (isDev) {
+    const puppeteer = await import("puppeteer");
+    browser = await puppeteer.default.launch({ headless: true });
+  } else {
+    const puppeteerCore = await import("puppeteer-core");
+    browser = await puppeteerCore.default.launch({
+      args: chromium.args,
+      defaultViewport: chromium.defaultViewport,
+      executablePath: await chromium.executablePath(),
+      headless: chromium.headless,
+    });
+  }
 
   try {
     const page = await browser.newPage();
